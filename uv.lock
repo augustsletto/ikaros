@@ -6,6 +6,9 @@ resolution-markers = [
     "platform_machine == 's390x'",
 ]
 
+[manifest]
+overrides = [{ name = "triton", marker = "sys_platform == 'linux'" }]
+
 [[package]]
 name = "certifi"
 version = "2022.12.7"
@@ -180,22 +183,20 @@ source = { virtual = "." }
 dependencies = [
     { name = "numpy" },
     { name = "onnxruntime" },
-    { name = "optimum", extra = ["onnxruntime-gpu"] },
+    { name = "optimum", extra = ["onnxruntime"] },
     { name = "sentencepiece" },
     { name = "torch" },
     { name = "transformers" },
-    { name = "triton" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "numpy", specifier = ">=2.4.4" },
     { name = "onnxruntime", specifier = ">=1.26.0" },
-    { name = "optimum", extras = ["onnxruntime-gpu"], specifier = ">=2.1.0" },
+    { name = "optimum", extras = ["onnxruntime"], specifier = ">=2.1.0" },
     { name = "sentencepiece", specifier = ">=0.2.1" },
     { name = "torch", specifier = ">=2.12.0" },
     { name = "transformers", specifier = ">=4.57.6" },
-    { name = "triton", specifier = ">=3.6.0" },
 ]
 
 [[package]]
@@ -506,22 +507,6 @@ wheels = [
 ]
 
 [[package]]
-name = "onnxruntime-gpu"
-version = "1.26.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "flatbuffers" },
-    { name = "numpy" },
-    { name = "packaging" },
-    { name = "protobuf" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/c8/aa2dc0e79bba577f37d5448bcb32fea79977e07506684d8138c19a0f1077/onnxruntime_gpu-1.26.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9e6e4fb1ec9ae1cf456534d9115f106ab2a1ae96fa513b4ed0f4795302b4a2c6", size = 276978254, upload-time = "2026-05-08T19:16:22.096Z" },
-    { url = "https://files.pythonhosted.org/packages/41/e7/923298431e669567d7ccc2a4c898b6534a47641a051569fd97165fe6d9b8/onnxruntime_gpu-1.26.0-cp314-cp314-win_amd64.whl", hash = "sha256:3e592439b0183d303c2374517b5b392599a3d50b2dc9de949b9b15731ac921c9", size = 229142768, upload-time = "2026-05-08T19:09:54.589Z" },
-    { url = "https://files.pythonhosted.org/packages/97/91/93ffe5431d154989f5e04864a25a97eea480997d771232bcbbc538188241/onnxruntime_gpu-1.26.0-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:56dc7b73954ff4bdc71f5b8ab306b6f61be5d007881b6ef423a609e2b9cd088b", size = 276991545, upload-time = "2026-05-08T19:16:33.347Z" },
-]
-
-[[package]]
 name = "optimum"
 version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -538,8 +523,8 @@ wheels = [
 ]
 
 [package.optional-dependencies]
-onnxruntime-gpu = [
-    { name = "optimum-onnx", extra = ["onnxruntime-gpu"] },
+onnxruntime = [
+    { name = "optimum-onnx", extra = ["onnxruntime"] },
 ]
 
 [[package]]
@@ -557,8 +542,8 @@ wheels = [
 ]
 
 [package.optional-dependencies]
-onnxruntime-gpu = [
-    { name = "onnxruntime-gpu" },
+onnxruntime = [
+    { name = "onnxruntime" },
 ]
 
 [[package]]
