@@ -75,9 +75,9 @@ for opt in [Optimization.NONE, Optimization.ONNX, Optimization.INT8]:
     handle.unload()
 
 # Save results
-os.makedirs("logs", exist_ok=True)
+os.makedirs("logs/benchmarks", exist_ok=True)
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-filepath = f"logs/benchmark_{timestamp}.json"
+filepath = f"logs/benchmarks/benchmark_{timestamp}.json"
 
 with open(filepath, "w") as f:
     json.dump({
