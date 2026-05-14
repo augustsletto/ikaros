@@ -1,0 +1,494 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "id": 1,
+      "title": "Requests / sec",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 80 },
+              { "color": "#F2495C", "value": 150 }
+            ]
+          },
+          "unit": "reqps",
+          "decimals": 1
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ikaros_requests_total[30s]))",
+          "legendFormat": "Total RPS"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "id": 2,
+      "title": "Total Requests",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#73BF69", "value": null }
+            ]
+          },
+          "unit": "short",
+          "decimals": 0
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "sum(ikaros_requests_total)",
+          "legendFormat": "Total"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "id": 3,
+      "title": "Error Rate",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.01 },
+              { "color": "#F2495C", "value": 0.05 }
+            ]
+          },
+          "unit": "percentunit",
+          "decimals": 2,
+          "noValue": "0%"
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ikaros_requests_total{status=\"error\"}[1m])) / sum(rate(ikaros_requests_total[1m]))",
+          "legendFormat": "Error %"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "id": 4,
+      "title": "Models Loaded",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#8AB8FF", "value": null }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "none",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "ikaros_models_loaded",
+          "legendFormat": "Models"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "id": 5,
+      "title": "Queue Depth",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 10 },
+              { "color": "#F2495C", "value": 50 }
+            ]
+          },
+          "decimals": 0
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "ikaros_queue_depth",
+          "legendFormat": "Queued"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "id": 6,
+      "title": "p99 Latency",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "#73BF69", "value": null },
+              { "color": "#FF9830", "value": 0.1 },
+              { "color": "#F2495C", "value": 0.5 }
+            ]
+          },
+          "unit": "s",
+          "decimals": 0
+        }
+      },
+      "options": {
+        "colorMode": "background_gradient",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ikaros_request_latency_seconds_bucket[30s])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 10,
+      "title": "Request Latency Percentiles",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "lineInterpolation": "smooth"
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ikaros_request_latency_seconds_bucket[30s])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ikaros_request_latency_seconds_bucket[30s])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ikaros_request_latency_seconds_bucket[30s])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 11,
+      "title": "Throughput by Model",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "spanNulls": true,
+            "lineInterpolation": "smooth",
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "reqps"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ikaros_requests_total[30s])) by (model_id)",
+          "legendFormat": "{{model_id}}"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+      "id": 20,
+      "title": "Inference Time (model only)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "lineInterpolation": "smooth"
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ikaros_inference_latency_seconds_bucket[30s])) by (le, model_id))",
+          "legendFormat": "{{model_id}} p50"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ikaros_inference_latency_seconds_bucket[30s])) by (le, model_id))",
+          "legendFormat": "{{model_id}} p99"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+      "id": 21,
+      "title": "Batch Size Distribution",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": true,
+            "lineInterpolation": "smooth"
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ikaros_batch_size_bucket[30s])) by (le))",
+          "legendFormat": "Median batch"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ikaros_batch_size_bucket[30s])) by (le))",
+          "legendFormat": "p95 batch"
+        },
+        {
+          "expr": "sum(rate(ikaros_batch_size_sum[30s])) / sum(rate(ikaros_batch_size_count[30s]))",
+          "legendFormat": "Avg batch"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "id": 22,
+      "title": "Queue Depth Over Time",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#FF9830", "mode": "fixed" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 30,
+            "spanNulls": true,
+            "lineInterpolation": "smooth",
+            "thresholdsStyle": { "mode": "line" }
+          },
+          "thresholds": {
+            "steps": [
+              { "color": "transparent", "value": null },
+              { "color": "#F2495C", "value": 20 }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "expr": "ikaros_queue_depth",
+          "legendFormat": "Queue depth"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 20 },
+      "id": 30,
+      "title": "Latency by Model & Optimization",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": true,
+            "lineInterpolation": "smooth"
+          },
+          "unit": "s"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right", "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(ikaros_request_latency_seconds_bucket[30s])) by (le, model_id, optimization))",
+          "legendFormat": "{{model_id}} ({{optimization}}) p50"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 20 },
+      "id": 31,
+      "title": "Success vs Error Rate",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "spanNulls": true,
+            "lineInterpolation": "smooth",
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "reqps"
+        }
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(ikaros_requests_total{status=\"success\"}[30s]))",
+          "legendFormat": "Success"
+        },
+        {
+          "expr": "sum(rate(ikaros_requests_total{status=\"error\"}[30s]))",
+          "legendFormat": "Errors"
+        }
+      ]
+    },
+    {
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 26 },
+      "id": 40,
+      "title": "Model Load Times",
+      "type": "table",
+      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 2
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "model_id" },
+            "properties": [{ "id": "custom.width", "value": 400 }]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "Value", "desc": true }]
+      },
+      "targets": [
+        {
+          "expr": "ikaros_model_load_seconds_sum / ikaros_model_load_seconds_count",
+          "legendFormat": "{{model_id}} ({{optimization}})",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": { "Time": true, "__name__": true, "instance": true, "job": true },
+            "renameByName": { "model_id": "Model", "optimization": "Optimization", "Value": "Load Time" }
+          }
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "tags": ["ikaros", "ml", "inference"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "name": "DS_PROMETHEUS",
+        "query": "prometheus",
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "title": "Ikaros Inference Server",
+  "uid": "ikaros-main"
+}

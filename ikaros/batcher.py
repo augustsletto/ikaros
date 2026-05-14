@@ -1,6 +1,7 @@
 import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
+from .metrics import BATCH_SIZE, QUEUE_DEPTH, INFERENCE_LATENCY, REQUESTS_TOTAL
 
 class BatchQueue:
     def __init__(self, model_manager, max_batch_size=32, max_wait_ms=50):
@@ -24,6 +25,7 @@ class BatchQueue:
         """Submit a single request. Returns when the result is ready."""
         future = asyncio.get_event_loop().create_future()
         await self.queue.put((model_id, input_data, future))
+        QUEUE_DEPTH.set(self.queue.qsize())
         return await future
     
     async def _process_loop(self):
@@ -43,6 +45,8 @@ class BatchQueue:
             await asyncio.sleep(0.005)  # 5ms — give time for more requests to arrive
             while not self.queue.empty() and len(batch) < self.max_batch_size:
                 batch.append(self.queue.get_nowait())
+                
+            QUEUE_DEPTH.set(self.queue.qsize())
 
                 
             
@@ -59,18 +63,26 @@ class BatchQueue:
                 inputs = [item[0] for item in items]
                 futures = [item[1] for item in items]
                 
+                BATCH_SIZE.labels(model_id=model_id).observe(len(inputs))
+                
                 try:
                     loop = asyncio.get_event_loop()
+                    
+                    start = time.time()
+                    
                     results = await loop.run_in_executor(
                         self._executor,
                         self.manager.predict,
                         model_id,
                         inputs
                     ) 
-                    
+                    INFERENCE_LATENCY.labels(model_id=model_id).observe(time.time() - start)
                     
                     for future, result in zip(futures, results):
                         future.set_result(result)
+                        REQUESTS_TOTAL.labels(model_id=model_id, status="success").inc()
                 except Exception as e:
                     for future in futures:
                         future.set_exception(e)
+                        REQUESTS_TOTAL.labels(model_id=model_id, status="error").inc()
+                        
